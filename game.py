@@ -23,7 +23,7 @@ enemy_image_needsclick = pygame.image.load('images/placeholder_enemy_needsclick.
 
 # load the audio files
 blip = pygame.mixer.Sound('audio/Blip_Select.wav')
-hurt = pygame.mixer.Sound('audio/Hit_HUrt2.wav')
+hurt = pygame.mixer.Sound('audio/Hit_Hurt2.wav')
 
 # make angy square bois
 class Enemy:
