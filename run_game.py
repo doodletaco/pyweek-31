@@ -34,13 +34,16 @@ pygame.mixer.music.set_volume(0.5)
 
 
 # load fonts
-font = pygame.font.Font('font/OpenDyslexic3-Regular.ttf', 20)
+font = pygame.font.Font('other-files/OpenDyslexic3-Regular.ttf', 20)
 
 #initialize global variables
 score = 0
-high_score = 0
 lives = 3
 last_angered = None
+
+with open('other-files/save-data.txt') as sd:
+    high_score = int(sd.read())
+
 
 # make angy square bois
 class Enemy:
@@ -75,6 +78,9 @@ class Enemy:
                 lost_life_sound.play()
                 lives -= 1
             else:
+                if score == high_score:
+                    with open('other-files/save-data.txt', 'w') as sd:
+                        sd.write(str(high_score))
                 score = 0
                 lives = 3
                 pygame.mixer.music.stop()
