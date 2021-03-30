@@ -12,7 +12,7 @@ pygame.display.set_caption('Pyweek 31')
 
 # create a color
 black = (0, 0, 0)
-white = (255, 255, 255)
+white = (245, 245, 245)
 
 # invent time
 clock = pygame.time.Clock()
@@ -22,6 +22,7 @@ center_image = pygame.image.load('images/angry_blob.png')
 enemy_image = pygame.image.load('images/heart.png')
 enemy_image_needsclick = pygame.image.load('images/heart_red.png')
 screen_image = pygame.image.load('images/screen.png')
+game_image = pygame.image.load('images/gameplay.png')
 
 # initialize audio files
 blip = pygame.mixer.Sound('audio/Blip_Select.wav')
@@ -33,7 +34,7 @@ pygame.mixer.music.set_volume(0.5)
 
 
 # load fonts
-font = pygame.font.SysFont('arial', 25)
+font = pygame.font.Font('font/OpenDyslexic3-Regular.ttf', 20)
 
 #some score variables
 score = 0
@@ -83,7 +84,7 @@ class Enemy:
 # draw the window and all the stuff in it
 def draw_window(center, e1, e2, e3, e4, score):
     global lives
-    dis.fill(black)
+    dis.blit(game_image, (0, 0))
 
     dis.blit(center_image, (center.x, center.y))
 
@@ -98,7 +99,7 @@ def draw_window(center, e1, e2, e3, e4, score):
 
     lives_counter = 'Lives: '
     for i in range(lives):
-        lives_counter += 'X '
+        lives_counter += 'X'
     lives_surface = font.render(lives_counter, False, white)
     dis.blit(lives_surface, (15, 45))
 
@@ -155,7 +156,7 @@ def anger(enemies):
 def main():
     global score, high_score
     # create rectangles
-    center = pygame.Rect(225, 225, 150, 150)
+    center = pygame.Rect(235, 215, 150, 150)
 
     enemy1rect = pygame.Rect(250, 50, 100, 100)
     enemy2rect = pygame.Rect(250, 450, 100, 100)
