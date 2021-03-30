@@ -15,10 +15,10 @@ This game is played entirely with the arrow keys.
 In the menu
 - Up arrow: Begin the game
 In game
-- Arrow keys: Press the one in the direction of the red square.
+- Arrow keys: Press the key in the direction of the red heart.
 
 GAMEPLAY:
-Use the arrow keys to steal the corresponding square.
+Use the arrow keys to steal the heart in the corresponding direction, relevant to the center.
 You can make a mistake 3 times.
 The game records your high score, but it will not save after being closed.
 
