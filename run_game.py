@@ -18,19 +18,19 @@ white = (255, 255, 255)
 clock = pygame.time.Clock()
 
 # create the images used
-center_image = pygame.image.load('images/placeholder_center.png')
-enemy_image = pygame.image.load('images/placeholder_enemy.png')
-enemy_image_needsclick = pygame.image.load('images/placeholder_enemy_needsclick.png')
+center_image = pygame.image.load('images/angry_blob.png')
+enemy_image = pygame.image.load('images/heart.png')
+enemy_image_needsclick = pygame.image.load('images/heart_red.png')
 screen_image = pygame.image.load('images/screen.png')
 
-# load the audio files
+# initialize audio files
 blip = pygame.mixer.Sound('audio/Blip_Select.wav')
 hurt = pygame.mixer.Sound('audio/Hit_Hurt2.wav')
 lost_life_sound = pygame.mixer.Sound('audio/Hit_Hurt4.wav')
 start_sound = pygame.mixer.Sound('audio/Jump.wav')
 
-menu_song = pygame.mixer.music.load('audio/Calm.wav')
-game_song = pygame.mixer.music.load('audio/FranticLevel.wav')
+pygame.mixer.music.set_volume(0.5)
+
 
 # load fonts
 font = pygame.font.SysFont('arial', 25)
@@ -155,12 +155,12 @@ def anger(enemies):
 def main():
     global score, high_score
     # create rectangles
-    center = pygame.Rect(250, 250, 100, 100)
+    center = pygame.Rect(225, 225, 150, 150)
 
-    enemy1rect = pygame.Rect(287, 100, 26, 26)
-    enemy2rect = pygame.Rect(287, 474, 26, 26)
-    enemy3rect = pygame.Rect(100, 278, 26, 26)
-    enemy4rect = pygame.Rect(474, 275, 26, 26)
+    enemy1rect = pygame.Rect(250, 50, 100, 100)
+    enemy2rect = pygame.Rect(250, 450, 100, 100)
+    enemy3rect = pygame.Rect(50, 250, 100, 100)
+    enemy4rect = pygame.Rect(450, 250, 100, 100)
 
     #initialize enemy classes
     e1 = Enemy(enemy1rect, 'up')
