@@ -36,10 +36,11 @@ pygame.mixer.music.set_volume(0.5)
 # load fonts
 font = pygame.font.Font('font/OpenDyslexic3-Regular.ttf', 20)
 
-#some score variables
+#initialize global variables
 score = 0
 high_score = 0
 lives = 3
+last_angered = None
 
 # make angy square bois
 class Enemy:
@@ -143,18 +144,23 @@ def end_screen():
 
 # causes a random square to be activated if there are no others
 def anger(enemies):
+    global last_angered
     none_angy = True
     for e in enemies:
         if e.needsClick:
-            last_angered = e
             none_angy = False
     if none_angy:
-        choice = random.choice(enemies).get_angy()
-
+        approved = False
+        while not approved:
+            chosen = random.choice(enemies)
+            if chosen is not last_angered:
+                last_angered = chosen
+                approved = True
+                chosen.get_angy()
 
 # main loop
 def main():
-    global score, high_score
+    global score, high_score, last_heart
     # create rectangles
     center = pygame.Rect(235, 215, 150, 150)
 
@@ -170,6 +176,8 @@ def main():
     e4 = Enemy(enemy4rect, 'right')
 
     enemies = [e1, e2, e3, e4]
+
+    last_heart = random.choice(enemies)
 
     pygame.mixer.music.stop()
     pygame.mixer.music.load('audio/Calm.wav')
