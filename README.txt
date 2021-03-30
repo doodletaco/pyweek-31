@@ -1,3 +1,7 @@
+I'll Cop Your Heart -
+ • Code created by doodleTaco
+ • Art created by doodleTaco
+
 DEPENDENCIES:
 This game requires the pygame and random modules in order to run.
 
