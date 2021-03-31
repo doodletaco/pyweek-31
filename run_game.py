@@ -18,7 +18,10 @@ white = (245, 245, 245)
 clock = pygame.time.Clock()
 
 # create the images used
-center_image = pygame.image.load('images/angry_blob.png')
+blob_up = pygame.image.load('images/angry_blob.png')
+blob_down = pygame.image.load('images/angry_blob_down.png')
+blob_left = pygame.image.load('images/angry_blob_left.png')
+blob_right = pygame.image.load('images/angry_blob_right.png')
 
 enemy_image = pygame.image.load('images/heart.png')
 enemy_image_needsclick = pygame.image.load('images/heart_red.png')
@@ -43,6 +46,7 @@ font = pygame.font.Font('other-files/OpenDyslexic3-Regular.ttf', 20)
 score = 0
 lives = 3
 last_angered = None
+blob = None
 
 with open('other-files/save-data.txt') as sd:
     high_score = int(sd.read())
@@ -51,9 +55,10 @@ with open('other-files/save-data.txt') as sd:
 # make angy square bois
 class Enemy:
     # initialize the class
-    def __init__(self, rct, key):
+    def __init__(self, rct, key, blob_image):
         self.rectangle = rct
         self.key = key
+        self.blob_image = blob_image
         self.image = enemy_image
         self.needsClick = False
         self.isBlue = False
@@ -61,9 +66,11 @@ class Enemy:
 
     # change the image to the square that needs to be clicked
     def get_angy(self):
+        global blob
         if not self.needsClick:
             self.needsClick = True
             self.image = enemy_image_needsclick
+            blob = self.blob_image
 
     # if the square needed to be clicked,
     def calm_down(self):
@@ -110,7 +117,7 @@ def draw_window(center, e1, e2, e3, e4, score):
     global lives
     dis.blit(game_image, (0, 0))
 
-    dis.blit(center_image, (center.x, center.y))
+    dis.blit(blob, (center.x, center.y))
 
     dis.blit(e1.image, (e1.rectangle.x, e1.rectangle.y))
     dis.blit(e2.image, (e2.rectangle.x, e2.rectangle.y))
@@ -193,10 +200,10 @@ def main():
     enemy4rect = pygame.Rect(450, 250, 100, 100)
 
     #initialize enemy classes
-    e1 = Enemy(enemy1rect, 'up')
-    e2 = Enemy(enemy2rect, 'down')
-    e3 = Enemy(enemy3rect, 'left')
-    e4 = Enemy(enemy4rect, 'right')
+    e1 = Enemy(enemy1rect, 'up', blob_up)
+    e2 = Enemy(enemy2rect, 'down', blob_down)
+    e3 = Enemy(enemy3rect, 'left', blob_left)
+    e4 = Enemy(enemy4rect, 'right', blob_right)
 
     enemies = [e1, e2, e3, e4]
 
