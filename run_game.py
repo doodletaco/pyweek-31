@@ -19,8 +19,11 @@ clock = pygame.time.Clock()
 
 # create the images used
 center_image = pygame.image.load('images/angry_blob.png')
+
 enemy_image = pygame.image.load('images/heart.png')
 enemy_image_needsclick = pygame.image.load('images/heart_red.png')
+enemy_image_clicked = pygame.image.load('images/heart_blue.png')
+
 screen_image = pygame.image.load('images/screen.png')
 game_image = pygame.image.load('images/gameplay.png')
 
@@ -53,6 +56,8 @@ class Enemy:
         self.key = key
         self.image = enemy_image
         self.needsClick = False
+        self.isBlue = False
+        self.framesBlue = 0
 
     # change the image to the square that needs to be clicked
     def get_angy(self):
@@ -86,6 +91,18 @@ class Enemy:
                 pygame.mixer.music.stop()
                 hurt.play()
                 end_screen()
+
+            self.isBlue = True
+
+    def blue(self):
+        if self.isBlue:
+            if self.framesBlue < 6:
+                self.image = enemy_image_clicked
+                self.framesBlue += 1
+            else:
+                self.isBlue = False
+                self.image = enemy_image
+                self.framesBlue = 0
 
 
 # draw the window and all the stuff in it
@@ -211,11 +228,10 @@ def main():
                 if event.key == pygame.K_RIGHT:
                     key_pressed = 'right'
 
-        # trigger calm down for each corresponding square
-        if key_pressed != '':
-            for e in enemies:
-                if key_pressed == e.key:
-                    e.calm_down()
+        for e in enemies:
+            if key_pressed == e.key:
+                e.calm_down()
+            e.blue()
 
         # activate a square if there needs to be one
         anger(enemies)
