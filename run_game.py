@@ -156,6 +156,11 @@ def end_screen():
                     main()
                 if event.key == pygame.K_ESCAPE:
                     run = False
+                if event.key == pygame.K_r:
+                    high_score = 0
+                    with open('other-files/save-data.txt', 'w') as sd:
+                        sd.write(str(high_score) + '\n')
+
 
         dis.blit(screen_image, (0, 0))
         # display text and stuff
