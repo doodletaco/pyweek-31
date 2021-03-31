@@ -154,6 +154,8 @@ def end_screen():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     main()
+                if event.key == pygame.K_ESCAPE:
+                    run = False
 
         dis.blit(screen_image, (0, 0))
         # display text and stuff
