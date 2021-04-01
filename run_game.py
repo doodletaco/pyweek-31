@@ -48,6 +48,7 @@ font = pygame.font.Font('other-files/OpenDyslexic3-Regular.ttf', 20)
 score = 0
 lives = 3
 last_angered = None
+time_angy = 0
 blob = None
 noise = True
 music = True
@@ -99,12 +100,7 @@ class Enemy:
                 if score == high_score:
                     with open('other-files/save-data.txt', 'w') as sd:
                         sd.write(str(high_score))
-                score = 0
-                lives = 3
-                pygame.mixer.music.stop()
-                if noise:
-                    hurt.play()
-                end_screen()
+                lives_gone()
 
             self.isBlue = True
 
@@ -211,12 +207,13 @@ def end_screen():
 
 # causes a random square to be activated if there are no others
 def anger(enemies):
-    global last_angered
+    global last_angered, lives, time_angy
     none_angy = True
     for e in enemies:
         if e.needsClick:
             none_angy = False
     if none_angy:
+        time_angy = 0
         approved = False
         while not approved:
             chosen = random.choice(enemies)
@@ -224,6 +221,23 @@ def anger(enemies):
                 last_angered = chosen
                 approved = True
                 chosen.get_angy()
+    else:
+        time_angy += 1
+        if time_angy > 120:
+            time_angy = 0
+            lives -= 1
+            if lives < 1:
+                lives_gone()
+            if noise:
+                lost_life_sound.play()
+
+def lives_gone():
+    score = 0
+    lives = 3
+    pygame.mixer.music.stop()
+    if noise:
+        hurt.play()
+    end_screen()
 
 # main loop
 def main():
