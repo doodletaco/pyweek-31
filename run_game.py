@@ -161,7 +161,8 @@ def end_screen():
                 if event.key == pygame.K_ESCAPE:
                     run = False
                 if event.key == pygame.K_r:
-                    lost_life_sound.play()
+                    if noise:
+                        lost_life_sound.play()
                     high_score = 0
                     with open('other-files/save-data.txt', 'w') as sd:
                         sd.write(str(high_score) + '\n')
@@ -232,6 +233,7 @@ def anger(enemies):
                 lost_life_sound.play()
 
 def lives_gone():
+    global lives, score
     score = 0
     lives = 3
     pygame.mixer.music.stop()
