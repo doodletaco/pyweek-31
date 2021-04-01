@@ -35,6 +35,8 @@ blip = pygame.mixer.Sound('audio/Blip_Select.wav')
 hurt = pygame.mixer.Sound('audio/Hit_Hurt2.wav')
 lost_life_sound = pygame.mixer.Sound('audio/Hit_Hurt4.wav')
 start_sound = pygame.mixer.Sound('audio/Jump.wav')
+toggle_sound = pygame.mixer.Sound('audio/Pickup_Coin2.wav')
+other_toggle_sound = pygame.mixer.Sound('audio/Pickup_Coin4.wav')
 
 pygame.mixer.music.set_volume(0.5)
 
@@ -47,6 +49,8 @@ score = 0
 lives = 3
 last_angered = None
 blob = None
+noise = True
+music = True
 
 with open('other-files/save-data.txt') as sd:
     high_score = int(sd.read())
@@ -83,11 +87,13 @@ class Enemy:
             if score > high_score:
                 high_score = score
 
-            blip.play()
+            if noise:
+                blip.play()
         # if not, end the game
         else:
             if lives > 1:
-                lost_life_sound.play()
+                if noise:
+                    lost_life_sound.play()
                 lives -= 1
             else:
                 if score == high_score:
@@ -96,7 +102,8 @@ class Enemy:
                 score = 0
                 lives = 3
                 pygame.mixer.music.stop()
-                hurt.play()
+                if noise:
+                    hurt.play()
                 end_screen()
 
             self.isBlue = True
@@ -139,10 +146,11 @@ def draw_window(center, e1, e2, e3, e4, score):
 
 # game over screen
 def end_screen():
-    global high_score, play_time
-    pygame.mixer.music.stop()
-    pygame.mixer.music.load('audio/FranticLevel.wav')
-    pygame.mixer.music.play(-1)
+    global high_score, play_time, noise, music
+    if music:
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load('audio/FranticLevel.wav')
+        pygame.mixer.music.play(-1)
     run = True
     while run:
         # track events
@@ -157,9 +165,31 @@ def end_screen():
                 if event.key == pygame.K_ESCAPE:
                     run = False
                 if event.key == pygame.K_r:
+                    lost_life_sound.play()
                     high_score = 0
                     with open('other-files/save-data.txt', 'w') as sd:
                         sd.write(str(high_score) + '\n')
+                # toggle bleeps
+                if event.key == pygame.K_n:
+                    if noise:
+                        noise = False
+                        other_toggle_sound.play()
+                    else:
+                        noise = True
+                        toggle_sound.play()
+                # toggle music
+                if event.key == pygame.K_m:
+                    if music:
+                        music = False
+                        pygame.mixer.music.stop()
+                        other_toggle_sound.play()
+                    else:
+                        music = True
+                        pygame.mixer.music.stop()
+                        pygame.mixer.music.load('audio/FranticLevel.wav')
+                        pygame.mixer.music.play(-1)
+                        toggle_sound.play()
+
 
 
         dis.blit(screen_image, (0, 0))
@@ -216,11 +246,13 @@ def main():
 
     last_heart = random.choice(enemies)
 
-    pygame.mixer.music.stop()
-    pygame.mixer.music.load('audio/Calm.wav')
-    pygame.mixer.music.play(-1)
+    if music:
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load('audio/Calm.wav')
+        pygame.mixer.music.play(-1)
 
-    start_sound.play()
+    if noise:
+        start_sound.play()
 
     # loop
     run = True
