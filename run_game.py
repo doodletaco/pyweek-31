@@ -18,40 +18,43 @@ white = (245, 245, 245)
 clock = pygame.time.Clock()
 
 # create the images used
+# blob images
 blob_up = pygame.image.load('images/angry_blob.png')
 blob_down = pygame.image.load('images/angry_blob_down.png')
 blob_left = pygame.image.load('images/angry_blob_left.png')
 blob_right = pygame.image.load('images/angry_blob_right.png')
 
+# heart images
 enemy_image = pygame.image.load('images/heart.png')
 enemy_image_needsclick = pygame.image.load('images/heart_red.png')
 enemy_image_clicked = pygame.image.load('images/heart_blue.png')
 
+# background images
 screen_image = pygame.image.load('images/screen.png')
 game_image = pygame.image.load('images/gameplay.png')
 
 # initialize audio files
-blip = pygame.mixer.Sound('audio/Blip_Select.wav')
-hurt = pygame.mixer.Sound('audio/Hit_Hurt2.wav')
-lost_life_sound = pygame.mixer.Sound('audio/Hit_Hurt4.wav')
-start_sound = pygame.mixer.Sound('audio/Jump.wav')
-toggle_sound = pygame.mixer.Sound('audio/Pickup_Coin2.wav')
-other_toggle_sound = pygame.mixer.Sound('audio/Pickup_Coin4.wav')
+blip = pygame.mixer.Sound('audio/Blip_Select.wav') # sound played when key pressed in game
+hurt = pygame.mixer.Sound('audio/Hit_Hurt2.wav') # sound when player lost all lives or deletes save data
+lost_life_sound = pygame.mixer.Sound('audio/Hit_Hurt4.wav') # sound when player loses a life
+start_sound = pygame.mixer.Sound('audio/Jump.wav') # sound when game starts
+toggle_sound = pygame.mixer.Sound('audio/Pickup_Coin2.wav') # sound when the toggle for noise/music is enabled
+other_toggle_sound = pygame.mixer.Sound('audio/Pickup_Coin4.wav') # sound when the toggle for noise/music is disabled
 
-pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.set_volume(0.7)
 
 
-# load fonts
+# load font
 font = pygame.font.Font('other-files/OpenDyslexic3-Regular.ttf', 20)
 
 #initialize global variables
-score = 0
-lives = 3
-last_angered = None
-time_angy = 0
-blob = None
-noise = True
-music = True
+score = 0 # how many hearts the player has copped
+lives = 3 # how many lives the player has
+last_angered = None # the heart that was last red
+time_angy = 0 # how long there has been a lack of input
+blob = None # the picture that the blob is
+noise = True # toggle for whether or not there are bleeps (noise)
+music = True # toggle for music
 
 with open('other-files/save-data.txt') as sd:
     high_score = int(sd.read())
@@ -76,6 +79,7 @@ class Enemy:
             self.needsClick = True
             self.image = enemy_image_needsclick
             blob = self.blob_image
+
 
     # if the square needed to be clicked,
     def calm_down(self):
@@ -104,8 +108,11 @@ class Enemy:
 
             self.isBlue = True
 
+
+    # if the wrong button is picked, turn the heart blue for a moment
     def blue(self):
         if self.isBlue:
+            # max number of frames blue
             if self.framesBlue < 6:
                 self.image = enemy_image_clicked
                 self.framesBlue += 1
@@ -140,9 +147,52 @@ def draw_window(center, e1, e2, e3, e4, score):
     pygame.display.update()
 
 
+# causes a random square to be activated if there are no others
+def anger(enemies):
+    global last_angered, lives, time_angy
+
+    # check if there is already an angered heart
+    none_angy = True
+    for e in enemies:
+        if e.needsClick:
+            none_angy = False
+    # add a new red heard that cant be the last one if there is none already
+    if none_angy:
+        time_angy = 0
+        approved = False
+        while not approved:
+            chosen = random.choice(enemies)
+            if chosen is not last_angered:
+                last_angered = chosen
+                approved = True
+                chosen.get_angy()
+    # if the key isnt pressed fast enough, lose a life
+    else:
+        time_angy += 1
+        if time_angy > 120:
+            time_angy = 0
+            lives -= 1
+            if lives < 1:
+                lives_gone()
+            if noise:
+                lost_life_sound.play()
+
+
+# send the player back to the menu
+def lives_gone():
+    global lives, score
+    score = 0
+    lives = 3
+    pygame.mixer.music.stop()
+    if noise:
+        hurt.play()
+    end_screen()
+
+
 # game over screen
 def end_screen():
     global high_score, play_time, noise, music
+    # play music if it is enabled
     if music:
         pygame.mixer.music.stop()
         pygame.mixer.music.load('audio/FranticLevel.wav')
@@ -156,10 +206,13 @@ def end_screen():
                 run = False
             # detect key presses
             if event.type == pygame.KEYDOWN:
+                # key to start the game
                 if event.key == pygame.K_UP:
                     main()
+                # key to exit the game
                 if event.key == pygame.K_ESCAPE:
                     run = False
+                # key to reset the save data
                 if event.key == pygame.K_r:
                     if noise:
                         lost_life_sound.play()
@@ -168,18 +221,22 @@ def end_screen():
                         sd.write(str(high_score) + '\n')
                 # toggle bleeps
                 if event.key == pygame.K_n:
+                    # enable noise
                     if noise:
                         noise = False
                         other_toggle_sound.play()
+                    # disable noise
                     else:
                         noise = True
                         toggle_sound.play()
                 # toggle music
                 if event.key == pygame.K_m:
+                    # disable music
                     if music:
                         music = False
                         pygame.mixer.music.stop()
                         other_toggle_sound.play()
+                    # enable music
                     else:
                         music = True
                         pygame.mixer.music.stop()
@@ -187,9 +244,9 @@ def end_screen():
                         pygame.mixer.music.play(-1)
                         toggle_sound.play()
 
-
-
+        # display the background
         dis.blit(screen_image, (0, 0))
+
         # display text and stuff
         words = 'Most Hearts Copped: ' + str(high_score)
         textsurface = font.render(words, False, white)
@@ -202,51 +259,18 @@ def end_screen():
 
         pygame.display.update()
 
+    # exit the game
     pygame.quit()
     quit()
 
 
-# causes a random square to be activated if there are no others
-def anger(enemies):
-    global last_angered, lives, time_angy
-    none_angy = True
-    for e in enemies:
-        if e.needsClick:
-            none_angy = False
-    if none_angy:
-        time_angy = 0
-        approved = False
-        while not approved:
-            chosen = random.choice(enemies)
-            if chosen is not last_angered:
-                last_angered = chosen
-                approved = True
-                chosen.get_angy()
-    else:
-        time_angy += 1
-        if time_angy > 120:
-            time_angy = 0
-            lives -= 1
-            if lives < 1:
-                lives_gone()
-            if noise:
-                lost_life_sound.play()
-
-def lives_gone():
-    global lives, score
-    score = 0
-    lives = 3
-    pygame.mixer.music.stop()
-    if noise:
-        hurt.play()
-    end_screen()
-
 # main loop
 def main():
     global score, high_score, last_heart
-    # create rectangles
+    # create rectangles, starting with the center character
     center = pygame.Rect(235, 215, 150, 150)
 
+    # decide where the hearts go
     enemy1rect = pygame.Rect(250, 50, 100, 100)
     enemy2rect = pygame.Rect(250, 450, 100, 100)
     enemy3rect = pygame.Rect(50, 250, 100, 100)
@@ -258,15 +282,19 @@ def main():
     e3 = Enemy(enemy3rect, 'left', blob_left)
     e4 = Enemy(enemy4rect, 'right', blob_right)
 
+    # a list of enemies for easier processing
     enemies = [e1, e2, e3, e4]
 
+    # initialize the last heart picked so that loop can function properly
     last_heart = random.choice(enemies)
 
+    # only play music if the toggle is enabled
     if music:
         pygame.mixer.music.stop()
         pygame.mixer.music.load('audio/Calm.wav')
         pygame.mixer.music.play(-1)
 
+    # only play noise if the toggle is enabled
     if noise:
         start_sound.play()
 
@@ -290,6 +318,7 @@ def main():
                 if event.key == pygame.K_RIGHT:
                     key_pressed = 'right'
 
+        # checks for processing input (or lack of it)
         for e in enemies:
             if key_pressed == e.key:
                 e.calm_down()
