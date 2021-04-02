@@ -32,6 +32,7 @@ enemy_image_clicked = pygame.image.load('images/heart_blue.png')
 # background images
 screen_image = pygame.image.load('images/screen.png')
 game_image = pygame.image.load('images/gameplay.png')
+game_image_alt = pygame.image.load('images/gameplay_2.png')
 
 # initialize audio files
 blip = pygame.mixer.Sound('audio/Blip_Select.wav') # sound played when key pressed in game
@@ -53,6 +54,7 @@ lives = 3 # how many lives the player has
 last_angered = None # the heart that was last red
 time_angy = 0 # how long there has been a lack of input
 blob = None # the picture that the blob is
+game_picture = game_image # the picture that is displayed in the background during gameplay
 noise = True # toggle for whether or not there are bleeps (noise)
 music = True # toggle for music
 
@@ -83,12 +85,17 @@ class Enemy:
 
     # if the square needed to be clicked,
     def calm_down(self):
-        global score, high_score, lives
+        global score, high_score, lives, game_picture
         # checks if the corresponding square needs to be clicked
         if self.needsClick:
             self.needsClick = False
             self.image = enemy_image
             score += 1
+            if score % 50 == 0:
+                if game_picture == game_image:
+                    game_picture = game_image_alt
+                else:
+                    game_picture = game_image
             if score > high_score:
                 high_score = score
 
@@ -124,8 +131,8 @@ class Enemy:
 
 # draw the window and all the stuff in it
 def draw_window(center, e1, e2, e3, e4, score):
-    global lives
-    dis.blit(game_image, (0, 0))
+    global lives, game_picture
+    dis.blit(game_picture, (0, 0))
 
     dis.blit(blob, (center.x, center.y))
 
