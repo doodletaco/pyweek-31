@@ -8,7 +8,7 @@ dis_h = 600
 dis_size = (dis_w, dis_h)
 
 dis = pygame.display.set_mode(dis_size)
-pygame.display.set_caption('Pyweek 31')
+pygame.display.set_caption('I\'ll Cop Your Heart: Pyweek 31')
 
 # create a color
 black = (0, 0, 0)
